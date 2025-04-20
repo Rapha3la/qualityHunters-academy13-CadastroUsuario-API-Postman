@@ -1,0 +1,3168 @@
+{
+	"info": {
+		"_postman_id": "a25dad80-e9d8-41a9-9a5c-3d4ac5b229fd",
+		"name": "Novo_Cadastro",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25151547"
+	},
+	"item": [
+		{
+			"name": "Novo Cadastro",
+			"item": [
+				{
+					"name": "Novo usuário sucesso",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de registro\", () => {\r",
+									"    pm.expect(pm.response.json().msg).to.be.eql(`Olá ${pm.environment.get('fullName')}, cadastro realizado com sucesso.`)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"User id\", () => {\r",
+									"    pm.environment.set(\"idListaUser\", pm.response.json().user._id)\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Definindo a base_url se ainda não existir\r",
+									"pm.globals.set(\"url\", \"https://qualitys-hunters.qacoders.dev.br\");\r",
+									"\r",
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend, \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//Gerar firstName\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"//Gerar lastName\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"// //Gerar e-mail aleatório\r",
+									"// pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"//     .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									"\r",
+									"// function generateNumberEmail(){\r",
+									"//     let numberEmail = '';\r",
+									"\r",
+									"//     for (let i = 0;i < 5; i++) {\r",
+									"//         numberEmail += Math.floor(Math.random() * 5).toString();\r",
+									"//     }\r",
+									"//     pm.environment.set(\"numberEmail\", numberEmail());\r",
+									"//     return numberEmail;\r",
+									"// }\r",
+									"\r",
+									"// generateNumberEmail();\r",
+									"// console.log(generateNumberEmail())\r",
+									"\r",
+									"// // Agora, crie o email concatenando o nome e o número gerado\r",
+									"// pm.environment.set(\"Email\", \r",
+									"//     pm.environment.get(\"fullName\").toLowerCase()\r",
+									"//     .replace(/\\s/g, \"\")\r",
+									"//     .normalize(\"NFD\")\r",
+									"//     .replace(/[\\u0300-\\u036f]/g, \"\") \r",
+									"//     + pm.environment.get(\"numberEmail\") + '@lumpa-lumpa.com.br' // Alterado o domínio para lumpa-lumpa\r",
+									"// );\r",
+									"\r",
+									"// console.log('Email gerado:', pm.environment.get(\"Email\"));\r",
+									"\r",
+									"function generateNumberEmail() {\r",
+									"    let numberEmail = '';\r",
+									"\r",
+									"    for (let i = 0; i < 5; i++) {\r",
+									"        numberEmail += Math.floor(Math.random() * 10).toString(); // Ajustado para números de 0 a 9\r",
+									"    }\r",
+									"    pm.environment.set(\"numberEmail\", numberEmail); // Salvar a string gerada no ambiente\r",
+									"    return numberEmail;\r",
+									"}\r",
+									"\r",
+									"// Gerar o número e salvar no ambiente\r",
+									"generateNumberEmail();\r",
+									"\r",
+									"// Exibir o número gerado no console para depuração\r",
+									"console.log(\"Número gerado para e-mail:\", pm.environment.get(\"numberEmail\"));\r",
+									"\r",
+									"// Garantir que \"fullName\" esteja definido no ambiente\r",
+									"if (!pm.environment.get(\"fullName\")) {\r",
+									"    throw new Error(\"A variável 'fullName' não está definida no Postman\");\r",
+									"}\r",
+									"\r",
+									"// Criar o e-mail concatenando o nome e o número gerado\r",
+									"const email = pm.environment\r",
+									"    .get(\"fullName\")\r",
+									"    .toLowerCase()\r",
+									"    .replace(/\\s/g, \"\") // Remove espaços\r",
+									"    .normalize(\"NFD\") // Remove acentos\r",
+									"    .replace(/[\\u0300-\\u036f]/g, \"\") +\r",
+									"    pm.environment.get(\"numberEmail\") +\r",
+									"    '@lumpa-lumpa.com.br';\r",
+									"\r",
+									"// Salvar o e-mail gerado no ambiente\r",
+									"pm.environment.set(\"Email\", email);\r",
+									"\r",
+									"// Log do e-mail gerado\r",
+									"console.log('Email gerado:', pm.environment.get(\"Email\"));"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\":\"{{fullName}}\",\r\n  \"mail\": \"{{Email}}\",\r\n  \"password\": \"123@Teste\",\r\n  \"accessProfile\": \"ADMIN\",\r\n  \"cpf\": \"{{CPF}}\",\r\n  \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] Vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", () => {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O campo nome completo é obrigatório.\"])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\":\"\",\r\n  \"mail\": \"{{Email}}\",\r\n  \"password\": \"123@Teste\",\r\n  \"accessProfile\": \"ADMIN\",\r\n  \"cpf\": \"{{CPF}}\",\r\n  \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] Uma Palavra",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", () => {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Informe o nome e sobrenome com as iniciais em letra maiúscula e sem caracteres especiais.\"])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\":\"Bernardo\",\r\n  \"mail\": \"{{Email}}\",\r\n  \"password\": \"123@Teste\",\r\n  \"accessProfile\": \"ADMIN\",\r\n  \"cpf\": \"{{CPF}}\",\r\n  \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] Maior 100 Carac.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", () => {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O nome completo deve ter no máximo 100 caracteres.\"])\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo Bernardo\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] Letras Acentuadas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"//Comparar nome do request body com o response\r",
+									"let requestBodyNome = pm.request.body.raw; //Armazena o request body\r",
+									"let jsonBodyNome = JSON.parse(requestBodyNome);\r",
+									"console.log(jsonBodyNome)\r",
+									"pm.environment.set(\"fullNameNome\", jsonBodyNome.fullName)\r",
+									"\r",
+									"pm.test('Comparar fullName do request com o do response', () => {\r",
+									"    pm.expect(pm.response.json().user.fullName).to.eq(pm.environment.get(\"fullNameNome\"))\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de sucesso\", function () {\r",
+									"    pm.expect(pm.response.json().msg).to.be.eql(`Olá ${pm.environment.get(\"fullNameNome\")}, cadastro realizado com sucesso.`);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"// Agora, crie o email concatenando o nome e o número gerado\r",
+									"pm.environment.set(\"Email\", \r",
+									"    pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\")\r",
+									"    .normalize(\"NFD\")\r",
+									"    .replace(/[\\u0300-\\u036f]/g, \"\") \r",
+									"    + pm.environment.get(\"numberEmail\") + '@lumpa-lumpa.com.br' // Alterado o domínio para lumpa-lumpa\r",
+									");\r",
+									"\r",
+									"console.log('Email gerado:', pm.environment.get(\"Email\"));"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] com Números",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O campo nome completo não deve conter números\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão 12345678\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Nome] com Carac. Espec.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Informe o nome e sobrenome com as iniciais em letra maiúscula e sem caracteres especiais.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão @#$%¨&*\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Email] Vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O campo e-mail é obrigatório.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Email] com Espaço",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O e-mail informado é inválido. Informe um e-mail no formato [nome@domínio.com].\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@   qacoders.com\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Email] sem @",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O e-mail informado é inválido. Informe um e-mail no formato [nome@domínio.com].\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadminqacoders.com\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Email] sem Domínio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O e-mail informado é inválido. Informe um e-mail no formato [nome@domínio.com].\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Email] Carac. Inválidos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O e-mail informado é inválido. Informe um e-mail no formato [nome@domínio.com].\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@¨%$#*&¨%\",\r\n    \"password\": \"123@Teste\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] Vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"O campo senha é obrigatório\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@qacoders.com\",\r\n    \"password\": \"\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@Teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] Menor 8 Carac.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Senha precisa ter: uma letra maiúscula, uma letra minúscula, um número, um caractere especial(@#$%) e tamanho entre 8-12.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@qacoders.com\",\r\n    \"password\": \"123@T\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@T\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] Maior 12 Carac.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Senha precisa ter: uma letra maiúscula, uma letra minúscula, um número, um caractere especial(@#$%) e tamanho entre 8-12.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@qacoders.com\",\r\n    \"password\": \"123@testeRaphaelaSouzaBenitte\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"123@testeRaphaelaSouzaBenitte\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] sem Maiúscula",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().msg).to.be.eql(\"Olá João da Glória Estevão, cadastro realizado com sucesso.\");\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"1234@test\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"1234@test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] sem Minúscula",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().msg).to.be.eql(\"Olá João da Glória Estevão, cadastro realizado com sucesso.\");\r",
+									"})\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"{{Email}}\",\r\n    \"password\": \"1234@TEST\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"1234@TEST\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] sem Número",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Senha precisa ter: uma letra maiúscula, uma letra minúscula, um número, um caractere especial(@#$%) e tamanho entre 8-12.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@qacoders.com\",\r\n    \"password\": \"Raphaela@Test\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"Raphaela@Test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Senha] sem Carac. Esp.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Verificar mensagem de erro\", function () {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql([\"Senha precisa ter: uma letra maiúscula, uma letra minúscula, um número, um caractere especial(@#$%) e tamanho entre 8-12.\"]);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"function nome() {\r",
+									"    const names = ['Alice', 'Miguel', 'Sophia', 'Arthur', 'Helena', 'Bernardo', 'Valentina', 'Heitor', 'Laura', 'Davi', 'Isabella', 'Lorenzo', 'Manuela', 'Théo', 'Luiza', 'Pedro', 'Giovanna', 'Gabriel', 'Julia'];\r",
+									"\r",
+									"    const randomName = names[Math.floor(Math.random() * names.length)]\r",
+									"\r",
+									"    return randomName\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"bolinha\", nome());\r",
+									"\r",
+									"function sobrenome() {\r",
+									"    const lastName = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Almeida', 'Lima', 'Ferreira', 'Pereira', 'Carvalho', 'Gonçalves', 'Ribeiro', 'Costa', 'Araujo', 'Martins', 'Fernandes'];\r",
+									"\r",
+									"    const randomLastName = lastName[Math.floor(Math.random() * lastName.length)]\r",
+									"\r",
+									"    return randomLastName\r",
+									"}\r",
+									"pm.environment.set(\"secondName\", sobrenome());\r",
+									"\r",
+									"//Concatenar first e last name e guardar variáveis dentro de \"fullName\":\r",
+									"pm.environment.set(\"fullName\", pm.environment.get(\"bolinha\") + \" \" + pm.environment.get(\"secondName\"));\r",
+									"\r",
+									"//Gerar CPF\r",
+									"function randomCpf(){\r",
+									"    let randomCpf = '';\r",
+									"\r",
+									"    for (let i = 0;i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"pm.environment.set(\"CPF\", randomCpf());\r",
+									"\r",
+									"//Gerar senha aleatoriamente\r",
+									"function generatePassword() {\r",
+									"    const chars = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%\";\r",
+									"    const comprimentoMinimo = 8;\r",
+									"    const comprimentoMaximo = 12;\r",
+									"    let senhaArray = [];\r",
+									" \r",
+									"    senhaArray.push(chars[Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[26 + Math.floor(Math.random() * 26)]); \r",
+									"    senhaArray.push(chars[52 + Math.floor(Math.random() * 10)]); \r",
+									"    senhaArray.push(chars[62 + Math.floor(Math.random() * 4)]); \r",
+									"    \r",
+									"    const comprimentoRestante = Math.max(comprimentoMinimo - senhaArray.length, comprimentoMaximo - senhaArray.length);\r",
+									"    \r",
+									"    for (let i = 0; i < comprimentoRestante; i++) {\r",
+									"        senhaArray.push(chars[Math.floor(Math.random() * chars.length)]);\r",
+									"    }\r",
+									"    return shuffleString(senhaArray.join(\"\"));\r",
+									"}\r",
+									"\r",
+									"function shuffleString(string) {\r",
+									"  return string.split(\"\").sort(() => Math.random() - 0.5).join(\"\");\r",
+									"}\r",
+									"pm.environment.set(\"NewPassword\", generatePassword());\r",
+									"\r",
+									"//Gerar e-mail aleatório\r",
+									"pm.environment.set(\"Email\", pm.environment.get(\"fullName\").toLowerCase()\r",
+									"    .replace(/\\s/g, \"\").normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") + '@ron-bugado.com.br')\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"João da Glória Estevão\",\r\n    \"mail\": \"sysadmin@qacoders.com\",\r\n    \"password\": \"12345Test\",\r\n    \"accessProfile\": \"ADMIN\",\r\n    \"cpf\": \"{{CPF}}\",\r\n    \"confirmPassword\": \"12345Test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Conf.Senha] Vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verificar status code\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Validar a mesnagem de erro - O campo de confirmação de senha não pode ficar vazio.\r",
+									"pm.test(\"Validar mensagem de campo vazio\", () => {\r",
+									"    pm.expect(pm.response.json().error).to.be.eql(['O campo de confirmação de senha é obrigatório.'])\r",
+									"});\r",
+									"\r",
+									"//Armazena o request body na variável\r",
+									"let requestBodyConfPassNull = pm.request.body.raw; \r",
+									"//Converte a string requestBodyConfPassNull (formato JSON) em um obj JS\r",
+									"let jsonConfPassNull = JSON.parse(requestBodyConfPassNull); \r",
+									"pm.test(\"Gravar Confirmação Senha vazio\", () => {\r",
+									"    pm.expect(jsonConfPassNull.confirmPassword).to.be.eq(\"\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "\"adminToken\"",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\":\"{{fullName}}\",\r\n  \"mail\": \"{{Email}}\",\r\n  \"password\": \"123@Raphaela\",\r\n  \"accessProfile\": \"ADMIN\",\r\n  \"cpf\": \"{{CPF}}\",\r\n  \"confirmPassword\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user?token={{adminToken}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Conf.Senha] Diferente Senha",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Validar status code\r",
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"//Capturar password\r",
+									"pm.environment.set(\"passwordCT19\", pm.response.json().password)\r",
+									"\r",
+									"//Validar msg de erro\r",
+									"pm.test(\"Validar msg - As senhas não conferem.\", function () {\r",
+									"     pm.expect(pm.response.json().error).to.eql(['As senhas não conferem.']);\r",
+									"});\r",
+									"\r",
+									"let requestBody = pm.request.body.raw; //Armazena o request body\r",
+									"let jsonBody = JSON.parse(requestBody); //Converte a string requestBodyem um obj em JS\r",
+									"pm.test(\"Checar campos password e confirmPassword\", () => {\r",
+									"    pm.expect(jsonBody.password).not.eql(jsonBody.confirmPassword);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validar senhas iguais.\", function () {\r",
+									"     pm.expect(pm.response.json().error).to.eql(['As senhas não conferem.']);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Montando a url variável para o sendRequest\r",
+									"let urlSend = pm.globals.get(\"url\") + \"/api/login\";\r",
+									"\r",
+									"// Buscando o token\r",
+									"pm.sendRequest({\r",
+									"    url: urlSend,   //'https://ron-bugado.qacoders.dev.br/api/login/', \r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'Content-Type': 'application/json'\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify({\r",
+									"            mail: 'sysadmin@qacoders.com',\r",
+									"            password: '1234@Test'\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(err);\r",
+									"    } else {\r",
+									"        const jsonData = res.json();\r",
+									"        pm.globals.set(\"adminToken\", jsonData.token);\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\":\"{{fullName}}\",\r\n  \"mail\": \"{{Email}}\",\r\n  \"password\": \"123@Raphaela\",\r\n  \"accessProfile\": \"ADMIN\",\r\n  \"cpf\": \"{{CPF}}\",\r\n  \"confirmPassword\": \"987@Raphaela\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
