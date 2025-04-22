@@ -1,52 +1,60 @@
----
 name: Testes de Login no Postman
-on:
-  - push
-  - workflow_dispatch
-  - pull_request
+
+on: [push, workflow_dispatch, pull_request]
+
 jobs:
   rodandoTestesLogin:
     runs-on: ubuntu-latest
     steps:
-      - name: Clonando o projeto para a maquina virtual
+      - name: Clonando o projeto para a máquina virtual
         uses: actions/checkout@v4
+
       - name: Checando as versões do Newman e do Node
         run: |
           newman --version
           node --version
+
       - name: Instalando Newman-Reporter-Htmlextra
         run: sudo npm install -g newman-reporter-htmlextra
+
+      - name: Criando diretório de resultados
+        run: mkdir -p results
+
       - name: Executando a collection
-        run: newman run ./Novo_Cadastro.postman_collection.json -e
-          ./RonBugado.postman_environment.json --reporters cli,htmlextra
-          --reporter-htmlextra-export ./results/Report.html
+        run: newman run ./Novo_Cadastro.postman_collection.json -e ./RonBugado.postman_environment.json --reporters cli,htmlextra --reporter-htmlextra-export ./results/Report.html
+
       - name: Resultado dos testes
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: resultados-newman
-          path: results
+          path: results/
+
   report:
     runs-on: ubuntu-latest
     if: always()
-    needs:
-      - rodandoTestesLogin
+    needs: [rodandoTestesLogin]
+    
     permissions:
       contents: read
       pages: write
       id-token: write
+      
     environment:
       name: github-pages
       url: https://Rapha3la.github.io/qualityHunters-academy13-CadastroUsuario-API-Postman/report.html
+
     steps:
-      - name: Configuração do site do resultado dos testes
+      - name: Baixar artefatos
         uses: actions/download-artifact@v4
         with:
           name: resultados-newman
           path: results/
-      - name: Upload dos Resultados
+
+      - name: Fazer upload dos resultados
         uses: actions/upload-pages-artifact@v3
         with:
           path: results/
-      - name: Subindo Pagina de Resultados dos Testes 🚀
+
+      - name: Publicar página de resultados
         uses: actions/deploy-pages@v4
