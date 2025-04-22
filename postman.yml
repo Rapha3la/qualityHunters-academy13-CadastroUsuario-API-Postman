@@ -1,0 +1,73 @@
+# Este é um fluxo de trabalho básico para ajudá-lo a começar com Actions
+
+name: Testes de Login no Postman
+
+# Controla quando a ação será executada, nesse caso vai acionar o fluxo de trabalho qdo der um push, ou for disparado direto do workflow (manualmente) ou qdo der um pull request
+on: [push, workflow_dispatch, pull_request]
+  
+# Uma execução de fluxo de trabalho é composta por um ou mais jobs que podem ser executados sequencialmente ou em paralelo
+jobs:
+  # This workflow contém um único job chamado "rodandoTestesLogin"
+  rodandoTestesLogin:
+    # O tipo de máquina virtual que o Actions vai criar e que o job será executado com as permissões necessárias
+    runs-on: ubuntu-latest
+    
+    # Steps representam  a sequência de tarefas que irá ser executada nessa parte do job
+    steps:
+      # Clonar o repositório para a máquina virtual do actions
+      - name: Clonando o projeto para a maquina virtual
+        uses: actions/checkout@v4
+
+      # Runs a set of commands using the runners shell
+      - name: Checando as versões do Newman e do Node
+        run: |
+          newman --version
+          node --version
+          
+      # Runs a single command using the runners shell      
+      - name: Instalando Newman-Reporter-Htmlextra
+        run: sudo npm install -g newman-reporter-htmlextra
+        
+      # Runs a set of commands using the runners shell
+      - name: Executando a collection
+        run: newman run ./Novo_Cadastro.postman_collection.json -e ./RonBugado.postman_environment.json --reporters cli, -r htmlextra --reporter-htmlextra-export ./results/Report.html
+   
+      # Runs a set of commands using the runners shell
+      - name: Resultado dos testes
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+            name: resultados-newman
+            path: results
+
+report:
+      - name: Report Tests
+        runs-on: ubuntu-latest
+        if: always()
+        needs:
+          - rodandoTestesLogin
+
+        permissions:
+          contents: read
+          pages: write
+          id-token: write
+        enviroment:
+          name: github-pages
+          url: https://Rapha3la.github.io/qualityHunters-academy13-CadastroUsuario-API-Postman /report.html
+
+        steps:
+          - name: Configuração do site do resultado dos testes
+            uses: actions/download-artifact@v4
+            with:
+              name: resultados-newman
+              path: results/
+
+          - name: Upload dos Resultados
+            uses: actions/upload-pages-artifact@v3
+            with:
+              path: results/
+
+          - name: Subindo Pagina de Resultados dos Testes 🚀
+            id: deployment
+            uses: actions/deploy-pages@v4
+  
