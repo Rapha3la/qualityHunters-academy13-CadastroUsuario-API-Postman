@@ -30,13 +30,13 @@ jobs:
   report:
     runs-on: ubuntu-latest
     if: always()
-    needs:
-      - rodandoTestesLogin
+    needs: [rodandoTestesLogin]
 
     permissions:
       contents: read
       pages: write
       id-token: write
+    
     environment:
       name: github-pages
       url: https://Rapha3la.github.io/qualityHunters-academy13-CadastroUsuario-API-Postman/report.html
@@ -54,5 +54,4 @@ jobs:
           path: results/
 
       - name: Subindo Pagina de Resultados dos Testes 🚀
-        id: deployment
         uses: actions/deploy-pages@v4
